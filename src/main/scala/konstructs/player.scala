@@ -46,6 +46,8 @@ class PlayerActor(pid: Int, nick: String, password: String, client: ActorRef, db
         context.become(sendBelt)
         unstashAll()
       } else {
+        println("Invalid username/password")
+        client ! Said("Invalid username/password")
         client ! PoisonPill
         context.stop(self)
       }
