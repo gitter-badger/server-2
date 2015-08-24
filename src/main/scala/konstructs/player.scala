@@ -37,7 +37,7 @@ class PlayerActor(pid: Int, nick: String, password: String, client: ActorRef, db
       if(newData.password == password) {
         data = newData
         if(data.inventory.isEmpty) {
-          val inventoryBlock = Block.createWithId(BlockType(ToolSackActor.BlockId))
+          val inventoryBlock = Block.createWithId(ToolSackActor.BlockId)
           universe ! CreateInventory(inventoryBlock.id.get, 16)
           val inventory = Inventory.createEmpty(9).withSlot(0, Stack.fromBlock(inventoryBlock))
           data = data.copy(inventory = inventory)
@@ -51,7 +51,7 @@ class PlayerActor(pid: Int, nick: String, password: String, client: ActorRef, db
         context.stop(self)
       }
     case JsonLoaded(_, None) =>
-      val inventoryBlock = Block.createWithId(BlockType(ToolSackActor.BlockId))
+      val inventoryBlock = Block.createWithId(ToolSackActor.BlockId)
       universe ! CreateInventory(inventoryBlock.id.get, 16)
       val inventory = Inventory.createEmpty(9).withSlot(0, Stack.fromBlock(inventoryBlock))
       data = Player(nick, password, startingPosition, 0, inventory)
@@ -96,8 +96,8 @@ class PlayerActor(pid: Int, nick: String, password: String, client: ActorRef, db
         getBeltBlock match {
           case None =>
             if(data.active < 6) {
-              val m = BlockType(material(random.nextInt(material.size)))
-              val stack = Stack.fromSeq(for(i <- 0 until Stack.MaxSize) yield { Block(None, m) })
+              val m = material(random.nextInt(material.size))
+              val stack = Stack.fromSeq(for(i <- 0 until Stack.MaxSize) yield { Block.create(m) })
               update(data.inventory.withSlot(data.active, stack))
             } else {
               universe ! InteractSecondary(self, nick, pos, None)
